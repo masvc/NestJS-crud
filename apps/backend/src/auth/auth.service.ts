@@ -57,7 +57,7 @@ export class AuthService {
       where: { email: dto.email },
     });
 
-    if (!user) {
+    if (!user || !user.password) {
       throw new UnauthorizedException('メールアドレスまたはパスワードが正しくありません');
     }
 
