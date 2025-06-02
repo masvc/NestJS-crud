@@ -24,4 +24,11 @@ export interface SignUpDto {
 export interface SignInDto {
   email: string;
   password: string;
+}
+
+export interface UpdateUserDto {
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
 } 

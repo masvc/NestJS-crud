@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../lib/axios';
-import type { AuthResponse, SignInDto, SignUpDto } from '../types/auth';
+import type { AuthResponse, SignInDto, SignUpDto, UpdateUserDto } from '../types/auth';
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
@@ -45,9 +45,33 @@ export const useAuth = () => {
     },
   });
 
+  const updateUser = useMutation({
+    mutationFn: async (data: UpdateUserDto) => {
+      const response = await apiClient.patch('/auth/me', data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['user'], data);
+    },
+  });
+
+  const deleteUser = useMutation({
+    mutationFn: async () => {
+      await apiClient.delete('/auth/me');
+    },
+    onSuccess: () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      queryClient.setQueryData(['user'], null);
+      navigate('/signin');
+    },
+  });
+
   return {
     signUp,
     signIn,
     logout,
+    updateUser,
+    deleteUser,
   };
 }; 
