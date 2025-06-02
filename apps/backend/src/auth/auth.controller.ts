@@ -5,9 +5,12 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  Patch,
+  Delete,
+  Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto, SignUpDto } from './dto/auth.dto';
+import { SignInDto, SignUpDto, UpdateUserDto } from './dto/auth.dto';
 import { AuthResponse } from './types/auth.types';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { User } from './decorators/user.decorator';
@@ -32,5 +35,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@User('id') userId: string): Promise<void> {
     return this.authService.logout(userId);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateMe(@User('id') userId: string, @Body() dto: UpdateUserDto) {
+    return this.authService.updateUser(userId, dto);
+  }
+
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  async deleteMe(@User('id') userId: string) {
+    return this.authService.deleteUser(userId);
   }
 } 

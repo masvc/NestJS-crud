@@ -31,4 +31,19 @@ export class RefreshTokenDto {
   @IsString()
   @IsNotEmpty()
   refreshToken: string;
+}
+
+export class UpdateUserDto {
+  @IsEmail()
+  email?: string;
+
+  @IsString()
+  @MinLength(8)
+  password?: string;
+
+  @IsString()
+  firstName?: string;
+
+  @IsString()
+  lastName?: string;
 } 

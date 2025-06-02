@@ -6,7 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignInDto, SignUpDto } from './dto/auth.dto';
+import { SignInDto, SignUpDto, UpdateUserDto } from './dto/auth.dto';
 import { AuthResponse, JwtPayload, Tokens } from './types/auth.types';
 import * as bcrypt from 'bcrypt';
 
@@ -130,5 +130,29 @@ export class AuthService {
   private async hashData(data: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return bcrypt.hash(data, salt);
+  }
+
+  async updateUser(userId: string, dto: UpdateUserDto) {
+    const data: any = {};
+    if (dto.email) data.email = dto.email;
+    if (dto.firstName !== undefined) data.firstName = dto.firstName;
+    if (dto.lastName !== undefined) data.lastName = dto.lastName;
+    if (dto.password) data.password = await this.hashData(dto.password);
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    };
+  }
+
+  async deleteUser(userId: string) {
+    await this.prisma.user.delete({ where: { id: userId } });
+    return { message: 'ユーザーを削除しました' };
   }
 } 
